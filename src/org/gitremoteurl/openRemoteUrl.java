@@ -65,9 +65,28 @@ public final class openRemoteUrl implements ActionListener {
 								String url = line.split("=")[1];
 								if (!"".equals(url) && Desktop.isDesktopSupported()
 										&& Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+									url = url.trim();
 									if (contextNodePath.equals(projectDir)) {
 										Desktop.getDesktop().browse(new URI(url));
 										break;
+									}
+									if (StringUtils.containsIgnoreCase(url, "amadeus.net")) {
+										if (!contextNodePath.equals(projectDir) & contextNode.isFolder()) {
+											String folderToAdd = StringUtils.removeStart(contextNodePath, projectDir);
+											url = url.replace(".git", "/browse" + folderToAdd);
+											url = url.replace("scm", "projects");
+											url = url.replace(projectDirName, "repos/" + projectDirName);
+											Desktop.getDesktop().browse(new URI(url));
+											break;
+										}
+										if (!contextNodePath.equals(projectDir) & !contextNode.isFolder()) {
+											String fileToAdd = StringUtils.removeStart(contextNodePath, projectDir);
+											url = url.replace(".git", "/browse" + fileToAdd);
+											url = url.replace("scm", "projects");
+											url = url.replace(projectDirName, "repos/" + projectDirName);
+											Desktop.getDesktop().browse(new URI(url));
+										}
+
 									}
 									if (StringUtils.containsIgnoreCase(url, "github.")) {
 										if (!contextNodePath.equals(projectDir) & contextNode.isFolder()) {
@@ -83,6 +102,7 @@ public final class openRemoteUrl implements ActionListener {
 										}
 									}
 								}
+								break;
 							}
 						}
 
